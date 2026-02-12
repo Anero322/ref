@@ -11,7 +11,7 @@ import { getCurrentUser, logout } from "./api/auth";
 import * as movie from "./api/movie";
 import { jwtDecode } from "jwt-decode";
 
-let Version = "1.0.0";
+let version = "1.0.0";
 
 // JWT токен - потому что пароли это скучно
 interface TokenPayload {
@@ -25,7 +25,7 @@ interface TokenPayload {
 export default function App() {
   const [token, setToken] = useState<string | null>(null); // Волшебная бумажка
   const [role, setRole] = useState<"ADMIN" | "USER" | null>(null); // Твоя судьба в системе
-  const [UserData, setUserData] = useState<any>(null); // На всякий случай, вдруг пригодится
+  const [userData, setUserData] = useState<any>(null); // На всякий случай, вдруг пригодится
 
   // Эффект: просыпаемся и вспоминаем кто мы такие
   useEffect(() => {
