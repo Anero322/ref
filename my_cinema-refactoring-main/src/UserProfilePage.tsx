@@ -3,14 +3,14 @@ import axios from "axios";
 import * as userApi from "./api/user";
 
 interface Props {
-  token: string; // Ваш пропуск в мир банкротства
+  token: string; 
 }
 
 interface PurchaseResponse {
   id: string;
   clientId: string;
   ticketIds: string[];
-  totalCents: number; // Сумма, от которой ваш кошелек плачет
+  totalCents: number; 
   status: string;
   createdAt: string;
   filmId: string;
@@ -18,9 +18,8 @@ interface PurchaseResponse {
 }
 
 interface ReviewForm {
-  rating: number; // От "ужасно" до "за эти деньги можно было и лучше"
-  text: string; // Ваше мнение, которое никто не прочитает
-}
+  rating: number; 
+  text: string; 
 
 export default function UserProfilePage({ token }: Props) {
   const [user, setUser] = useState<userApi.User | null>(null);
@@ -28,16 +27,15 @@ export default function UserProfilePage({ token }: Props) {
     firstName: "",
     lastName: "",
     email: "",
-    gender: "FEMALE", // По умолчанию все женщины - статистика не врет!
-    age: 21, // Вечная молодость разработчика
+    gender: "FEMALE", 
+    age: 21, 
   });
-  const [editing, setEditing] = useState(false); // Режим "ой, я ошибся"
+  const [editing, setEditing] = useState(false); 
 
-  const [purchases, setPurchases] = useState<PurchaseResponse[]>([]); // Доказательства вашей расточительности
+  const [purchases, setPurchases] = useState<PurchaseResponse[]>([]); 
   const [filmTitles, setFilmTitles] = useState<Record<string, string>>({});
-  const [reviewForms, setReviewForms] = useState<Record<string, ReviewForm>>({}); // Незавершенные шедевры критики
+  const [reviewForms, setReviewForms] = useState<Record<string, ReviewForm>>({}); 
 
-  // Загружаем пользователя: "Так вот кто я такой!"
   useEffect(() => {
     async function fetchUser() {
       try {
@@ -108,7 +106,6 @@ export default function UserProfilePage({ token }: Props) {
     setForm({ ...form, [name]: name === "age" ? Number(value) : value });
   };
 
-  // Сохраняем профиль: теперь система знает о вас все
   const handleSaveProfile = async () => {
     if (!user) return;
     try {
@@ -192,7 +189,7 @@ export default function UserProfilePage({ token }: Props) {
       <div className="mb-4">
         <h2 className="text-primary mb-3">История покупок</h2>
         {purchases.length === 0 ? (
-          <p>У вас пока нет покупок 🎟️</p> // Грустный смайлик пустого кошелька
+          <p>У вас пока нет покупок 🎟️</p>
         ) : (
           purchases.map((p: PurchaseResponse) => (
             <div key={p.id} className="card text-dark mb-3">

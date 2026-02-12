@@ -3,56 +3,54 @@ import axios from "axios";
 import * as movieApi from "./api/movie";
 import ReviewsDisplay from "./ReviewsDisplay";
 
-// Интерфейсы - потому что TypeScript не доверяет нам
+
 interface Props {
-  movie: movieApi.Film; // Фильм, который заставит вас плакать (от цены билетов)
-  onBack: () => void; // Кнопка "спасите, я передумал"
+  movie: movieApi.Film; 
+  onBack: () => void; 
 }
 
 interface Session {
-  id: string; // Уникальный ID сеанса да я мистер очевидность
-  movieId: string; // Какой фильм будем смотреть
-  hallId: string; // В каком зале сидеть
-  startAt: string; // Когда все начнется
+  id: string; 
+  movieId: string; 
+  hallId: string; 
+  startAt: string;
 }
 
 interface Seat {
-  id: string; // Уникальный ID места
-  row: number; // Чем дальше ряд, тем дешевле билет (и хуже видно)
-  number: number; // Номер - чтобы не сесть не туда
-  categoryId: string; // VIP или "как все"
-  status: string; // Свободно, занято или "ой, простите"
+  id: string;
+  row: number; 
+  number: number; 
+  categoryId: string; 
+  status: string; 
 }
 
 interface Category {
-  id: string; // ID категории
-  name: string; // Название (VIP, Стандарт, "У самого экрана")
-  priceCents: number; // Цена в копейках, потому что рубли - это скучно
+  id: string;
+  name: string; 
+  priceCents: number; 
 }
 
 interface HallPlan {
-  hallId: string; // ID зала
-  rows: number;  // Сколько рядов придется пробежать до туалета
-  seats: Seat[]; // Все места, хорошие и не очень
-  categories: Category[];  // Разные цены за одно и то же сидение
+  hallId: string; 
+  rows: number;  
+  seats: Seat[]; 
+  categories: Category[];  
 }
 
-// на этом месте у вас должен задергаться глаз, зеленый цвет уже ненавистен 
 
 interface Ticket {
-  id: string; // ID билета
-  seatId: string; // На какое место
-  categoryId: string; // Какая категория
-  status: "AVAILABLE" | "RESERVED" | "SOLD"; // Можно купить, уже занято или прощай
-  priceCents: number; // Во что влетим
+  id: string; 
+  seatId: string; 
+  categoryId: string; 
+  status: "AVAILABLE" | "RESERVED" | "SOLD"; 
+  priceCents: number; 
 }
 
 interface Purchase {
-  id: string; // ID покупки
-  ticketIds: string[]; // Какие билеты купили
+  id: string; 
+  ticketIds: string[]; 
 }
 
-// Главный компонент: здесь решается судьба вашего кошелька
 const MovieDetailsPage: React.FC<Props> = ({ movie, onBack }) => {
   const [sessions, setSessions] = useState<Session[]>([]); // Все сеансы
   const [loadingSessions, setLoadingSessions] = useState(true); // Ждем-с...
@@ -134,7 +132,6 @@ const MovieDetailsPage: React.FC<Props> = ({ movie, onBack }) => {
     );
   };
 
-  // здесь моя муза уехала в отпуск простите 
   const getCategory = (catId: string) =>
     hallPlan?.categories.find((c) => c.id === catId); // Ищем нужную категорию
 

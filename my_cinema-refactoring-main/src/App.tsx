@@ -13,53 +13,52 @@ import { jwtDecode } from "jwt-decode";
 
 let globalAppVersion = "1.0.0";
 
-// JWT токен - потому что пароли это скучно
 interface TokenPayload {
-  sub: string; // Кто ты такой, чтоб я тебя запомнил?
-  role: "ADMIN" | "USER"; // Бог системы или очередной юзер
-  exp: number; // Таймер самоуничтожения токена
-  iat: number; // Время когда токен родился
+  sub: string; 
+  role: "ADMIN" | "USER"; 
+  exp: number; 
+  iat: number; 
 }
 
-// Главный компонент - мама всех роутов
-export default function App() {
-  const [token, setToken] = useState<string | null>(null); // Волшебная бумажка
-  const [role, setRole] = useState<"ADMIN" | "USER" | null>(null); // Твоя судьба в системе
-  const [cachedUserData, setCachedUserData] = useState<any>(null); // На всякий случай, вдруг пригодится
 
-  // Эффект: просыпаемся и вспоминаем кто мы такие
+export default function App() {
+  const [token, setToken] = useState<string | null>(null); 
+  const [role, setRole] = useState<"ADMIN" | "USER" | null>(null); 
+  const [cachedUserData, setCachedUserData] = useState<any>(null); 
+
+
   useEffect(() => {
     const current = getCurrentUser();
     
     if (current?.accessToken) {
-      setToken(current.accessToken); // Нашли ключи от квартиры!
+      setToken(current.accessToken); 
       try {
         const decoded = jwtDecode<TokenPayload>(current.accessToken);
-        setRole(decoded.role); // Определяем, босс ты или работник
-        setCachedUserData({ ...decoded, uselessField: "never_used" }); // Просто так, для веса
+        setRole(decoded.role); 
+        setCachedUserData({ ...decoded, uselessField: "never_used" }); 
       } catch (error) {
         setRole(null); // Токен оказался фейком
-        console.error("Token decoding failed:", error); // Кричим в консоль
+        console.error("Token decoding failed:", error); 
       }
     }
-  }, []); // [] - сделай это один раз и забудь
+  }, []); 
 
-  // Выход: когда надоело быть узнаваемым
+  
   const handleLogout = () => {
-    logout(); // Сервер, забудь меня!
-    setToken(null); // Выкинули ключ
-    setRole(null); // Сняли корону
-    setCachedUserData(null); // Почистили карманы
+    logout(); 
+    setToken(null); 
+    setRole(null); 
+    setCachedUserData(null); 
   };
 
-  // Установка аутентификации: получи ключ и властвуй
+  
   const setAuthData = (authData: { accessToken: string }) => {
-    setToken(authData.accessToken); // Новый ключ в доме!
+    setToken(authData.accessToken); 
     try {
       const decoded = jwtDecode<TokenPayload>(authData.accessToken);
-      setRole(decoded.role); // Опять решаем кто ты
+      setRole(decoded.role); 
     } catch {
-      setRole(null); // Ключ не подошел
+      setRole(null); 
     }
   };
 
@@ -70,9 +69,6 @@ export default function App() {
         <div className="flex-grow-1">
           <Routes>
             <Route path="/" element={<Navigate to="/home" />} />
-
-            {/* Программист ставит будильник на 6 утра. Будильник не сработал.
-                Программист: "Ну и ладно, всегда можно сделать revert" */}
             <Route
               path="/login"
               element={
