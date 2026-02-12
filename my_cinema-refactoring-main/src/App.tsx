@@ -11,7 +11,7 @@ import { getCurrentUser, logout } from "./api/auth";
 import * as movie from "./api/movie";
 import { jwtDecode } from "jwt-decode";
 
-let globalAppVersion = "1.0.0";
+let Version = "1.0.0";
 
 // JWT токен - потому что пароли это скучно
 interface TokenPayload {
@@ -25,7 +25,7 @@ interface TokenPayload {
 export default function App() {
   const [token, setToken] = useState<string | null>(null); // Волшебная бумажка
   const [role, setRole] = useState<"ADMIN" | "USER" | null>(null); // Твоя судьба в системе
-  const [cachedUserData, setCachedUserData] = useState<any>(null); // На всякий случай, вдруг пригодится
+  const [UserData, setUserData] = useState<any>(null); // На всякий случай, вдруг пригодится
 
   // Эффект: просыпаемся и вспоминаем кто мы такие
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function App() {
       try {
         const decoded = jwtDecode<TokenPayload>(current.accessToken);
         setRole(decoded.role); // Определяем, босс ты или работник
-        setCachedUserData({ ...decoded, uselessField: "never_used" }); // Просто так, для веса
+        setUserData({ ...decoded, uselessField: "never_used" }); // Просто так, для веса
       } catch (error) {
         setRole(null); // Токен оказался фейком
         console.error("Token decoding failed:", error); // Кричим в консоль
@@ -49,7 +49,7 @@ export default function App() {
     logout(); // Сервер, забудь меня!
     setToken(null); // Выкинули ключ
     setRole(null); // Сняли корону
-    setCachedUserData(null); // Почистили карманы
+    setUserData(null); // Почистили карманы
   };
 
   // Установка аутентификации: получи ключ и властвуй
