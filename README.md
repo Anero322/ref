@@ -1,23 +1,4 @@
 classDiagram
-    %% ===== Абстрактные классы и интерфейсы =====
-    class BaseEntity {
-        <<abstract>>
-        # id: number
-        # createdAt: string
-        # updatedAt: string
-        +validate()* string[]
-        +toJSON()* object
-    }
-    
-    class ICrudService {
-        <<interface>>
-        +list(token: string, params?: object) Promise~any[]~*
-        +get(token: string, id: number) Promise~any~*
-        +create(token: string, data: object) Promise~any~*
-        +update(token: string, id: number, data: object) Promise~any~*
-        +delete(token: string, id: number) Promise~void~*
-    }
-    
     %% ===== Модели данных =====
     class User {
         - id: number
@@ -27,10 +8,8 @@ classDiagram
         - email: string
         - phone: string
         - createdAt: string
-        +hasRole(role: string) boolean
-        +getDisplayName() string
+        +hasRole(role) boolean
         +validate() string[]
-        +toJSON() object
     }
     
     class Vehicle {
@@ -41,12 +20,8 @@ classDiagram
         - maxVolume: number
         - status: string
         - type: string
-        - notes: string
-        +validateLicensePlate() boolean
         +isAvailable() boolean
-        +getCapacity() object
         +validate() string[]
-        +toJSON() object
     }
     
     class Product {
@@ -56,13 +31,8 @@ classDiagram
         - length: number
         - width: number
         - height: number
-        - category: string
-        - sku: string
-        - description: string
         +get volume() number
         +validate() string[]
-        +toApiPayload() object
-        +toJSON() object
     }
     
     class Delivery {
@@ -76,14 +46,8 @@ classDiagram
         - vehicleId: number
         - totalWeight: number
         - totalVolume: number
-        - canEdit: boolean
-        - priority: string
         +get isEditable() boolean
-        +get duration() number
         +calculateTotals() void
-        +validateTimeWindow() boolean
-        +toApiPayload() object
-        +toJSON() object
     }
     
     class DeliveryPoint {
@@ -91,12 +55,8 @@ classDiagram
         - sequence: number
         - latitude: number
         - longitude: number
-        - address: string
         - deliveryId: number
         +get coordinates() object
-        +validateCoordinates() boolean
-        +toApiPayload() object
-        +toJSON() object
     }
     
     class DeliveryProduct {
@@ -104,127 +64,129 @@ classDiagram
         - quantity: number
         - productId: number
         - deliveryPointId: number
-        +get totalWeight() number
-        +get totalVolume() number
-        +toApiPayload() object
-        +toJSON() object
-    }
-    
-    class DeliveryFilters {
-        - date: string
-        - courier_id: string
-        - status: string
-        - date_from: string
-        - date_to: string
-        +toQueryParams() object
-        +isEmpty() boolean
-        +reset() void
-        +clone() DeliveryFilters
     }
     
     %% ===== API Сервисы =====
     class ApiClient {
-        - {static} API_URL: string
-        - {static} DEFAULT_TIMEOUT: number
-        - {static} MAX_RETRY_COUNT: number
-        - {static} RETRY_DELAY: number
-        + {static} withRetry(fn: Function) Promise~any~
-        + {static} buildUrl(path: string, params?: object) URL
-        + {static} apiRequest(path: string, options: object) Promise~any~
-        - {static} logRequest(method: string, url: string, body?: any) void
-        - {static} logResponse(url: string, status: number, data: any) void
-    }
-    
-    class BaseService {
-        <<abstract>>
-        # resource: string
-        +list(token: string, params?: object) Promise~any[]~
-        +get(token: string, id: number) Promise~any~
-        +create(token: string, data: object) Promise~any~
-        +update(token: string, id: number, data: object) Promise~any~
-        +delete(token: string, id: number) Promise~void~
-    }
-    
-    class UserService {
-        +list(token: string, role?: string) Promise~User[]~
-        +create(token: string, data: User) Promise~User~
-        +update(token: string, id: number, data: object) Promise~User~
-        +delete(token: string, id: number) Promise~void~
-    }
-    
-    class VehicleService {
-        +list(token: string) Promise~Vehicle[]~
-        +create(token: string, data: Vehicle) Promise~Vehicle~
-        +update(token: string, id: number, data: object) Promise~Vehicle~
-        +delete(token: string, id: number) Promise~void~
-        +getAvailable(token: string) Promise~Vehicle[]~
-    }
-    
-    class ProductService {
-        +list(token: string) Promise~Product[]~
-        +create(token: string, data: Product) Promise~Product~
-        +update(token: string, id: number, data: object) Promise~Product~
-        +delete(token: string, id: number) Promise~void~
-        +bulkDelete(token: string, ids: number[]) Promise~void~
+        +apiRequest(path, options) Promise
+        +withRetry(fn) Promise
     }
     
     class DeliveryService {
-        +list(token: string, filters?: DeliveryFilters) Promise~Delivery[]~
-        +get(token: string, id: number) Promise~Delivery~
-        +create(token: string, data: object) Promise~Delivery~
-        +update(token: string, id: number, data: object) Promise~Delivery~
-        +delete(token: string, id: number) Promise~void~
-        +generate(token: string, data: object) Promise~object~
-        +getCourierDeliveries(token: string, filters?: object) Promise~Delivery[]~
+        +list(token, filters) Promise
+        +get(token, id) Promise
+        +create(token, data) Promise
+        +update(token, id, data) Promise
+        +delete(token, id) Promise
+        +generate(token, data) Promise
+    }
+    
+    class UserService {
+        +list(token, role) Promise
+        +create(token, data) Promise
+        +update(token, id, data) Promise
+        +delete(token, id) Promise
+    }
+    
+    class VehicleService {
+        +list(token) Promise
+        +create(token, data) Promise
+        +update(token, id, data) Promise
+        +delete(token, id) Promise
+    }
+    
+    class ProductService {
+        +list(token) Promise
+        +create(token, data) Promise
+        +update(token, id, data) Promise
+        +delete(token, id) Promise
     }
     
     class RouteService {
-        +calculate(token: string, points: object[]) Promise~object~
+        +calculate(token, points) Promise
     }
     
-    %% ===== Контекст и состояние =====
+    %% ===== Контекст =====
     class AuthContext {
         - token: string
         - user: User
         - loading: boolean
         - error: string
-        - sessionExpired: boolean
-        - lastActivity: number
-        - refreshing: boolean
         +get isAuthenticated() boolean
-        +login(credentials: object) Promise~void~
+        +login(credentials) Promise
         +logout() void
-        +refreshSession() Promise~void~
-        +updateUser(updates: object) void
-        -checkSession() void
+        +refreshSession() Promise
     }
     
-    class AuthProvider {
-        - state: AuthContext
-        +render() ReactNode
+    %% ===== Страницы =====
+    class LoginPage {
+        - form: object
+        - loginAttempts: number
+        - isLocked: boolean
+        +handleSubmit() void
+    }
+    
+    class DeliveriesPage {
+        - deliveries: Delivery[]
+        - filters: object
+        - form: object
+        - generationData: object
+        +loadDeliveries() void
+        +handleSubmit() void
+        +handleGenerate() void
+    }
+    
+    class CourierDeliveriesPage {
+        - deliveries: Delivery[]
+        - filters: object
+        - selectedDelivery: Delivery
+        +loadDeliveries() void
+        +openDelivery() void
+    }
+    
+    class DashboardPage {
+        - data: object
+        - loading: boolean
+        - error: string
+        +loadData() void
+    }
+    
+    class UsersPage {
+        - users: User[]
+        - form: object
+        - editingUser: User
+        +loadUsers() void
+        +handleSubmit() void
+        +handleDelete() void
+    }
+    
+    class VehiclesPage {
+        - vehicles: Vehicle[]
+        - form: object
+        - editingVehicle: Vehicle
+        +loadVehicles() void
+        +handleSubmit() void
+    }
+    
+    class ProductsPage {
+        - products: Product[]
+        - form: object
+        - editingProduct: Product
+        +loadProducts() void
+        +handleSubmit() void
     }
     
     %% ===== Компоненты =====
+    class AppLayout {
+        - navItems: object[]
+        +render() ReactNode
+        +handleLogout() void
+    }
+    
     class DeliveryDetails {
         - delivery: Delivery
-        - onClose: () => void
+        - onClose: Function
         +render() ReactNode
-        -renderDeliveryInfo() ReactNode
-        -renderRoute() ReactNode
-    }
-    
-    class AppLayout {
-        - navItems: NavItem[]
-        - roleLabels: object
-        +render() ReactNode
-        -getAllowedItems() NavItem[]
-        -handleLogout() void
-    }
-    
-    class NavItem {
-        + path: string
-        + label: string
-        + roles: string[]
     }
     
     class RoleGuard {
@@ -233,261 +195,61 @@ classDiagram
         +render() ReactNode
     }
     
-    class ProtectedLayout {
-        +render() ReactNode
-    }
-    
     %% ===== Утилиты =====
     class DateUtils {
-        + {static} formatDate(value: string) string
-        + {static} formatTime(value: string) string
-        + {static} formatTimestamp(value: string, includeTime?: boolean) string
-        + {static} calculateDateDiff(start: string, end: string) object
-        + {static} isValidDate(dateString: string) boolean
-        + {static} isValidTime(timeString: string) boolean
-        - {static} padZero(num: number) string
+        +formatDate(value) string
+        +formatTime(value) string
+        +calculateDateDiff(start, end) object
     }
     
     class NumberUtils {
-        + {static} formatNumber(value: number, options?: object) string
-        + {static} formatCurrency(value: number, currency?: string) string
-        + {static} calculateVolume(length: number, width: number, height: number) number
-        + {static} calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) number
-    }
-    
-    class ValidationUtils {
-        + {static} validatePassword(password: string) string
-        + {static} validateLoginForm(login: string, password: string) string[]
-        + {static} validateLicensePlate(plate: string) string
-        + {static} validateCapacity(weight: number, volume: number) string[]
-        + {static} validateProduct(product: Product) string[]
-        + {static} validateTimeWindow(start: string, end: string, minHours: number) string
+        +formatNumber(value) string
+        +formatCurrency(value) string
+        +calculateVolume(l, w, h) number
     }
     
     class Constants {
-        + {static} APP_NAME: string
-        + {static} DELIVERY_STATUSES: array
-        + {static} DELIVERY_STATUS_MAP: object
-        + {static} USER_ROLES: array
-        + {static} USER_ROLE_MAP: object
-        + {static} FEATURES: object
-        + {static} ERROR_MESSAGES: object
-        + {static} PATTERNS: object
-        + {static} PAGINATION: object
+        +DELIVERY_STATUSES: array
+        +USER_ROLES: array
+        +ERROR_MESSAGES: object
     }
     
-    %% ===== Страницы =====
-    class LoginPage {
-        - form: object
-        - localError: string
-        - loginAttempts: number
-        - isLocked: boolean
-        - lockoutEnd: number
-        - rememberMe: boolean
-        - showPassword: boolean
-        +render() ReactNode
-        -handleSubmit(event: Event) Promise~void~
-        -handleChange(event: Event) void
-        -validateForm() string[]
-        -checkLockout() boolean
-    }
-    
-    class DashboardPage {
-        - data: object
-        - loading: boolean
-        - error: string
-        - lastRefresh: number
-        - autoRefresh: boolean
-        - selectedPeriod: string
-        - chartData: object
-        +render() ReactNode
-        -loadData() Promise~void~
-        -refreshData() void
-        -calculateStats() object
-    }
-    
-    class UsersPage {
-        - users: User[]
-        - loading: boolean
-        - error: string
-        - form: object
-        - editingUser: User
-        - roleFilter: string
-        - searchQuery: string
-        - sortBy: string
-        - sortOrder: string
-        - selectedUsers: number[]
-        - page: number
-        +render() ReactNode
-        -loadUsers() Promise~void~
-        -handleSubmit(event: Event) Promise~void~
-        -handleDelete(user: User) Promise~void~
-        -startEdit(user: User) void
-        -resetForm() void
-        -handleSort(column: string) void
-        -handleSearch(event: Event) void
-    }
-    
-    class VehiclesPage {
-        - vehicles: Vehicle[]
-        - loading: boolean
-        - error: string
-        - form: object
-        - editingVehicle: Vehicle
-        - searchQuery: string
-        - sortBy: string
-        - sortOrder: string
-        - statusFilter: string
-        - selectedVehicles: number[]
-        +render() ReactNode
-        -loadVehicles() Promise~void~
-        -handleSubmit(event: Event) Promise~void~
-        -handleDelete(vehicle: Vehicle) Promise~void~
-        -startEdit(vehicle: Vehicle) void
-        -validateForm() string[]
-    }
-    
-    class ProductsPage {
-        - products: Product[]
-        - loading: boolean
-        - error: string
-        - form: object
-        - editingProduct: Product
-        - searchQuery: string
-        - sortBy: string
-        - sortOrder: string
-        - selectedCategory: string
-        - showAdvanced: boolean
-        +render() ReactNode
-        -loadProducts() Promise~void~
-        -handleSubmit(event: Event) Promise~void~
-        -handleDelete(product: Product) Promise~void~
-        -startEdit(product: Product) void
-        -calculateVolume() number
-        -exportToCsv() void
-    }
-    
-    class DeliveriesPage {
-        - deliveries: Delivery[]
-        - loading: boolean
-        - error: string
-        - couriers: User[]
-        - vehicles: Vehicle[]
-        - products: Product[]
-        - filters: DeliveryFilters
-        - form: object
-        - editingDelivery: Delivery
-        - selectedDelivery: Delivery
-        - generationDates: any[]
-        - generationResult: any
-        - routePoints: any[]
-        - routeResult: any
-        +render() ReactNode
-        -loadReferences() Promise~void~
-        -loadDeliveries() Promise~void~
-        -handleSubmit(event: Event) Promise~void~
-        -handleGenerateDeliveries(event: Event) Promise~void~
-        -handleCalculateRoute(event: Event) Promise~void~
-        -handleEditDelivery(delivery: Delivery) void
-        -handleDeleteDelivery(delivery: Delivery) Promise~void~
-        -addPoint() void
-        -removePoint(index: number) void
-        -addProductToPoint(index: number) void
-    }
-    
-    class CourierDeliveriesPage {
-        - deliveries: Delivery[]
-        - loading: boolean
-        - error: string
-        - filters: DeliveryFilters
-        - selectedDelivery: Delivery
-        - detailLoading: boolean
-        - detailError: string
-        - autoRefresh: boolean
-        - lastRefresh: number
-        - viewMode: string
-        - sortBy: string
-        - notifications: any[]
-        +render() ReactNode
-        -loadDeliveries() Promise~void~
-        -openDelivery(id: number) Promise~void~
-        -closeDeliveryDetail() void
-        -refreshDeliveries() void
-        -showNotification(message: string) void
-        -getStatusColor(status: string) string
-        -getStatusPriority(status: string) number
-        -groupDeliveriesByDate() object
-    }
-    
-    %% ===== Наследование =====
-    User --|> BaseEntity
-    Vehicle --|> BaseEntity
-    Product --|> BaseEntity
-    Delivery --|> BaseEntity
-    DeliveryPoint --|> BaseEntity
-    DeliveryProduct --|> BaseEntity
-    
-    BaseService ..|> ICrudService
-    UserService --|> BaseService
-    VehicleService --|> BaseService
-    ProductService --|> BaseService
-    DeliveryService --|> BaseService
-    RouteService --|> BaseService
-    
-    %% ===== Композиция и агрегация =====
+    %% ===== Связи =====
     Delivery "1" *-- "many" DeliveryPoint : contains
     DeliveryPoint "1" *-- "many" DeliveryProduct : contains
     DeliveryProduct "many" --> "1" Product : references
-    Delivery "many" --> "1" User : assigned to (courier)
+    Delivery "many" --> "1" User : assigned to
     Delivery "many" --> "1" Vehicle : uses
-    Delivery --> DeliveryFilters : filtered by
     
-    %% ===== Зависимости сервисов =====
+    DeliveryService --> ApiClient : uses
     UserService --> ApiClient : uses
     VehicleService --> ApiClient : uses
     ProductService --> ApiClient : uses
-    DeliveryService --> ApiClient : uses
     RouteService --> ApiClient : uses
     
-    %% ===== Зависимости страниц от сервисов =====
-    UsersPage --> UserService : uses
-    VehiclesPage --> VehicleService : uses
-    ProductsPage --> ProductService : uses
     DeliveriesPage --> DeliveryService : uses
     DeliveriesPage --> RouteService : uses
     CourierDeliveriesPage --> DeliveryService : uses
+    UsersPage --> UserService : uses
+    VehiclesPage --> VehicleService : uses
+    ProductsPage --> ProductService : uses
     
-    %% ===== Зависимости от утилит =====
-    LoginPage --> DateUtils : uses
-    LoginPage --> ValidationUtils : uses
-    LoginPage --> Constants : uses
-    
-    DashboardPage --> DateUtils : uses
-    DashboardPage --> NumberUtils : uses
-    
-    DeliveriesPage --> DateUtils : uses
-    DeliveriesPage --> NumberUtils : uses
-    DeliveriesPage --> ValidationUtils : uses
-    DeliveriesPage --> Constants : uses
-    
-    CourierDeliveriesPage --> DateUtils : uses
-    CourierDeliveriesPage --> Constants : uses
-    
-    %% ===== Зависимости от контекста =====
     LoginPage --> AuthContext : uses
+    DeliveriesPage --> AuthContext : uses
+    CourierDeliveriesPage --> AuthContext : uses
     DashboardPage --> AuthContext : uses
     UsersPage --> AuthContext : uses
     VehiclesPage --> AuthContext : uses
     ProductsPage --> AuthContext : uses
-    DeliveriesPage --> AuthContext : uses
-    CourierDeliveriesPage --> AuthContext : uses
     AppLayout --> AuthContext : uses
     RoleGuard --> AuthContext : uses
-    ProtectedLayout --> AuthContext : uses
     
-    %% ===== Связи компонентов =====
     DeliveriesPage --> DeliveryDetails : renders
     CourierDeliveriesPage --> DeliveryDetails : renders
-    AppLayout --> ProtectedLayout : contains
-    ProtectedLayout --> RoleGuard : uses
-    AppLayout --> NavItem : defines
+    AppLayout --> RoleGuard : uses
+    
+    LoginPage --> DateUtils : uses
+    LoginPage --> ValidationUtils : uses
+    LoginPage --> Constants : uses
+    DeliveriesPage --> DateUtils : uses
+    DeliveriesPage --> NumberUtils : uses
